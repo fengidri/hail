@@ -1,0 +1,113 @@
+<script src='/js/jquery.js'></script>
+<script src='/index/index.js'></script>
+<script type="text/javascript"  src="/prettify/prettify.js"></script>
+<link rel="Stylesheet" type="text/css" href="/prettify/prettify.css" />
+<script>
+$(window).load(function () {
+            $("pre").addClass("prettyprint");
+             prettyPrint();
+})
+</script>
+
+<link rel="stylesheet" type="text/css" href="/index/index.css" />
+<style>
+    *{ 
+        margin:0;
+    }
+    p{ 
+        text-indent:2em;
+        margin-top:1em;
+        margin-bottom:1em;
+        line-height:200%;
+    }
+    li{
+        padding:4pt;
+        line-height:200%;
+
+    }
+    pre
+    { 
+        border-width:1pt;
+        border-style:solid;
+        padding:7pt;
+        width:80%;
+        margin:auto;
+        margin-top:5pt;
+        line-height:150%;
+        margin-bottom:5pt;
+        font-size:12pt;
+    }
+    #header{ 
+        width:100%;
+        height:30px;
+        border-bottom:1px solid black;
+    }
+    #email img{ 
+        height:25px;
+    }
+    #email span{ 
+        line-height:30px;
+        font-size:30px;
+    }
+    #email{ 
+        float:right;
+        margin:5px;
+    }
+    #yeah, #jiaheemail
+    { 
+        float:right;
+        margin-left:20pt;
+    }
+    #wrap{ 
+        padding-top:40px;
+        width:1000px;
+        margin:auto;
+        line-height:200%;
+        font-size:13pt;
+
+    }
+    #bottom{
+        height:500pt;
+    }
+    #title{ 
+        text-align:center;
+        font-size:40pt;
+        margin-top: 1em;
+        margin-bottom: 1em;
+    }
+    #delete{
+        position:fixed;
+        top:1em;
+        right:2em;
+    }
+    input,select{vertical-align:middle;}
+</style>
+<div id=title>{{!title}}</div>
+<button id=delete >Delete</button>
+<input type=hidden value={{ID}} id=ID>
+
+<div id='index'>
+</div>
+<div id='wrap'>
+{{!wiki}}
+</div>
+<script>
+$('button#delete').click(function(){
+    var ID = $("input#ID").val();
+    if(confirm("Delete!?")){
+        del(ID);
+    }
+});
+
+function del(ID){
+    $.ajax({
+        url: '/fwiki/chapters/' + ID,
+        type: 'DELETE',
+        success: function(result) {
+            alert('Delete OK');
+            location.href='/fwiki/chapters';
+         }
+    });
+}
+</script>
+
