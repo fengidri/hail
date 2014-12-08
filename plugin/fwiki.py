@@ -25,6 +25,7 @@ class index:# 提供静态网页功能
         return static_file(filename, WIKIPATH)
 
 
+
 class chapters(object):
     def POST(self):
         Data = self.forms
