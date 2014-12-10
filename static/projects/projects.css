@@ -1,0 +1,48 @@
+#cfgstruct{
+    line-height:2.4;
+    width:600px;
+    margin: auto;
+}
+#cfgstruct input{
+    border: 0;
+    border-bottom: 1px solid;
+}
+#list{
+    width: 200px;
+    float:left;
+}
+#list button{
+    display:block;
+    width:80%;
+    margin: auto;
+    padding: 2px;
+    text-align: left;
+}
+#cfgstruct label{
+    width: 5em;
+    display: inline-block;
+}
+#src_path{
+    margin: 5px;
+    border: 1px solid;
+    padding: 4px;
+}
+#src_path #path, #src_path #cmp_path{
+    width:80%;
+}
+#src_path #sub_src_path{
+    margin: 5px 2em;
+    border: 1px solid;
+    padding: 4px;
+}
+
+#compile_info{
+    margin: 5px;
+    border: 1px solid;
+    padding: 4px;
+}
+#events{
+    margin: 5px;
+    border: 1px solid;
+    padding: 4px;
+}
