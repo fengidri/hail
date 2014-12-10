@@ -5,7 +5,7 @@
 #    version   :   1.0.1
 import os
 import context
-from cottle import static_file
+from cottle import  handle
 import wiki.modules as dw       #data of wiki
 import urllib2
 
@@ -20,19 +20,18 @@ urls = (
     '/(.*)', 'index',
         )
 
-class index:# 提供静态网页功能
+class index(handle):# 提供静态网页功能
     def GET(self, filename):
-        return static_file(filename, WIKIPATH)
+        return self.cfile(filename, WIKIPATH)
 
 
 
-class chapters(object):
+class chapters(handle):
     def POST(self):
-        Data = self.forms
-        title = Data.get('title')
-        content = Data.get('content')
-        cls = Data.get('class', '')
-        res = dw.add(title,  content, cls = cls)
+        title   = self.forms.get('title')
+        content = self.forms.get('content')
+        cls     = self.forms.get('class',   '')
+        res     = dw.add(title, content, cls = cls)
         dw.save()
         return res
 
@@ -50,7 +49,7 @@ class chapters(object):
                 
             return self.template("wiki_index", locals())
 
-class chapter(object):
+class chapter(handle):
     def get_filename(self, field):
         e = self.env.get(field, 'text/html')
         for tt in e.split(';'):

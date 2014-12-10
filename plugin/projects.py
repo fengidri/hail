@@ -5,6 +5,7 @@
 #    version   :   1.0.1
 
 import os
+from cottle import handle
 name = 'projects'
 urls = (
         '/index', 'index',
@@ -23,11 +24,11 @@ def init():
         os.mkdir(runtime_dir)
 init()
 
-class index:
+class index(handle):
     def GET(self):
         return self.template('projects')
 
-class configs:
+class configs(handle):
     def GET(self):
         cfg_files = os.listdir( config_dir )
         return [ x for x in cfg_files if x.endswith('.json')]
@@ -41,11 +42,11 @@ class configs:
         return 'OK'
 
 
-class config:
+class config(handle):
     cpath = config_dir
     def GET(self, name):
         path = os.path.join(self.cpath, name)
-        self.response.set_content_json()
+        self.set_content_json()
 
         return open(path).read()
 

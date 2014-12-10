@@ -9,6 +9,7 @@ import web
 #import json
 import os
 import sys
+from cottle import handle
 if sys.getdefaultencoding() != 'utf-8':
     reload(sys)
     sys.setdefaultencoding('utf-8')
@@ -87,7 +88,7 @@ name = 'normal'
 
 
 
-class Xclip(object):
+class Xclip(handle):
     data = ""
     def GET(self, down=False):
         xclip = os.popen("xclip -o").read()
@@ -101,7 +102,7 @@ class Xclip(object):
         Xclip.data = self.forms.get("tmp")
         raise self.redirect('/normal/xclip')
 
-class LocalGvim(object):
+class LocalGvim(handle):
     def POST(self):
         arg = self.forms.get('arg', '')
         os.popen2('gvim -c "%s"' % arg)
