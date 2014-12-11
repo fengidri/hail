@@ -59,7 +59,7 @@ class chapter(handle):
                 if k.strip() == 'filename':
                     return v.strip()
         else:
-            return 'index.mkiv'
+            return self.query.get('filename', 'index.mkiv')
 
     def GET(self,  Id):
         Id = int(Id)
@@ -94,7 +94,7 @@ class chapter(handle):
         
         cls = self.forms.get('class')
         if cls:
-            chapter.setcls(cls)
+            chapter.setcls(cls.decode('utf8'))
         
         tag = self.forms.get('tags')
         if tag:
