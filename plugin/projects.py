@@ -26,7 +26,9 @@ init()
 
 class index(handle):
     def GET(self):
-        return self.template('projects')
+        return self.template('projects', 
+                config_dir=config_dir,
+                runtime_dir=runtime_dir)
 
 class configs(handle):
     def GET(self):

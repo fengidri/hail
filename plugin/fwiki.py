@@ -30,8 +30,10 @@ class chapters(handle):
     def POST(self):
         title   = self.forms.get('title')
         content = self.forms.get('content')
-        cls     = self.forms.get('class',   '')
-        res     = dw.add(title, content, cls = cls)
+        cls    = self.forms.get('class',    '')
+        public = int(self.forms.get('post', 1))
+        tags   = self.forms.get('tags',     [])
+        res     = dw.add(title, content, cls, tags, public)
         dw.save()
         return res
 
@@ -99,6 +101,14 @@ class chapter(handle):
         tag = self.forms.get('tags')
         if tag:
             chapter.settag(tag.split(','))
+
+        p = self.forms.get('post')
+        if p != None:
+            if p == '0' or p.lower() == 'false':
+                p = False
+            else:
+                p = True 
+            chapter.setpublic(p)
 
         #content
         content = self.forms.get('content')
