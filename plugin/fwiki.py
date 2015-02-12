@@ -4,7 +4,7 @@
 #    email     :   fengidri@yeah.net
 #    version   :   1.0.1
 import os
-import context
+import context2 as context
 from cottle import  handle
 import wiki.modules as dw       #data of wiki
 import urllib2
