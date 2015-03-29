@@ -19,18 +19,25 @@ import logging
 import re
 import types
 
-import web
 import plugins
 import cottle
 PLUGINS = []
 URLS = [] 
+def group(li):
+    gp = []
+    i = 0
+    while i < len(li) - 1:
+        gp.append((li[i], li[i+1]))
+        i += 2
+    return gp
+
 
 def load_plugin(plugin_path):
     ps = plugins.load(plugin_path, 'name', 'urls')
     for mode, name, urls in ps.values():
         mode_init(mode, name, urls)
 def mode_init(mode, name, urls):
-    for url, fun in list(web.utils.group(urls, 2)):
+    for url, fun in list(group(urls)):
         if url.startswith('/'):
             url = '/%s%s' % (name, url)
         else:
@@ -57,7 +64,7 @@ if __name__ == "__main__":
 
     load_plugin(plugin_path)
 
-    for u,c in web.utils.group(URLS, 2):
+    for u,c in group(URLS):
         logging.info("%s:%s" % (u,c))
     app = application(tuple(URLS), globals())
     app.run()
