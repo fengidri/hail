@@ -9,11 +9,9 @@
 import os
 from cottle import  handle
 from wiki.modules import BlogDate       #data of wiki
+from settings import STOREPATH
 
 
-STOREPATH = os.path.join(os.getcwd(), '../blog/store')
-STOREPATH = os.path.join(os.getcwd(), 'submodules/fengidri.github.io/store')
-STOREPATH = os.path.join(os.getcwd(), '/var/www/blog/store')
 
 name = 'fwiki'
 urls = (
