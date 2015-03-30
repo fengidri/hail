@@ -13,6 +13,7 @@ from wiki.modules import BlogDate       #data of wiki
 
 STOREPATH = os.path.join(os.getcwd(), '../blog/store')
 STOREPATH = os.path.join(os.getcwd(), 'submodules/fengidri.github.io/store')
+STOREPATH = os.path.join(os.getcwd(), '/var/www/blog/store')
 
 name = 'fwiki'
 urls = (
@@ -37,7 +38,7 @@ class chapters(handle):
         return res
 
 class chapter(handle):
-    def POST(self,  Id):
+    def PUT(self,  Id):
         dw = BlogDate(STOREPATH)
 
         Id = int(Id)

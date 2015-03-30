@@ -1,6 +1,3 @@
 [submodule "submodules/cottle"]
 	path = submodules/cottle
 	url = git@github.com:fengidri/cottle
-[submodule "submodules/fengidri.github.io"]
-	path = submodules/fengidri.github.io
-	url = git@github.com:fengidri/fengidri.github.io
