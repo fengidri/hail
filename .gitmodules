@@ -4,3 +4,6 @@
 [submodule "submodules/fengidri.github.io"]
 	path = submodules/fengidri.github.io
 	url = git@github.com:fengidri/fengidri.github.io
+[submodule "submodules/tex2html"]
+	path = submodules/tex2html
+	url = git@github.com:fengidri/tex2html.git

@@ -1,0 +1,119 @@
+<script src='/static/js/jquery.js'></script>
+<style>
+#keys{
+    width: 200pt;
+    float: left;
+}
+#keys li{
+    cursor:pointer;
+}
+#content{
+    width: 800pt;
+    float: left;
+    border: 1px solid;
+    min-height: 600pt;
+    padding: 2em;
+}
+table{
+    border-collapse:collapse;
+    border: 1px solid;
+}
+table td{
+    padding: 0.5em;
+    border: 1px solid;
+}
+li{
+    margin: 1em;
+}
+</style>
+<script>
+function get()
+{
+    key = $(this).text();
+    $.ajax({
+        url: "/redis/KEYS/" + key,
+        dataType: "json",
+        success: function(data){
+            var c = $('div#value').html('');
+            $('div#content span#type').text(data.type);
+            $('div#content span#key').text(key);
+
+            if (data.type == 'none'){
+                return;
+            }
+            if (data.type == 'string'){
+                c.html(data.value);
+            }
+            if (data.type == 'hash'){
+                var t = $('<table>');
+                for (k in data.value){
+                    var tr = $('<tr>');
+                    tr.append($('<td>').text(k));
+                    tr.append($('<td>').text(data.value[k]));
+                    t.append(tr);
+                }
+                c.append(t);
+            }
+        },
+    })
+}
+$.ajax({
+    url: "/redis/KEYS",
+    dataType: "json",
+    success: function(data){
+        var list = $("div#keys ul");
+        list.html('');
+        for( i in  data){
+            var k = data[i];
+            var s = $("<li>").text(k);
+            s.click(get);
+            list.append(s);
+        }
+    },
+})
+
+$.ajax({
+    url: "/redis/Set",
+    dataType: "json",
+    success: function(data){
+        var setting = $("div#setting");
+        setting.find('#host').text(data[0]);
+        setting.find('#port').text(data[1]);
+        setting.find('#db').text(data[2]);
+    },
+})
+</script>
+
+<div id=setting>
+    <label>HOST:</label> <span id=host></span>
+    &nbsp;
+    &nbsp;
+    &nbsp;
+    &nbsp;
+    <label>PORT:</label> <span id=port></span>
+    &nbsp;
+    &nbsp;
+    &nbsp;
+    &nbsp;
+    <label>DB:</label> <span id=db></span>
+</div>
+
+<hr />
+<div id=keys>
+    <ul>
+    </ul>
+</div>
+
+<div id=content>
+    <div id=info>
+        <label>KEY:</label> <span id=key></span><br />
+        <label>类型:</label> <span id=type></span><br />
+    </div>
+<br /><br />
+<hr />
+    <div id=value>
+    </div>
+</div>
+
+
+
