@@ -1,0 +1,67 @@
+
+<script src='/static/js/jquery.js'></script>
+<script src='/static/json/json.js'></script>
+<style>
+textarea{
+    float: left;
+}
+#keys{
+    width: 200pt;
+}
+#keys li{
+    cursor:pointer;
+}
+#content{
+    width: 800pt;
+    border: 1px solid;
+    min-height: 400pt;
+    padding: 1em;
+    float: left;
+}
+table{
+    border-collapse:collapse;
+}
+table td{
+    vertical-align: top;
+    text-align: left;
+}
+table td#key{
+    vertical-align: top;
+    text-align: left;
+    color: blue;
+}
+#string{
+    color: black;
+}
+#number{
+    color: grey;
+}
+#null{
+    color: red;
+}
+
+#boolean{
+    color: purple;
+}
+li{
+    margin: 1em;
+}
+
+</style>
+<script>
+$(document).ready(function(){
+    $('#dump').click(function(){
+        dump($.parseJSON($('textarea').val()), $('div#content'));
+    });
+});
+</script>
+<button id=dump>Dump</button>
+<hr />
+<textarea cols=70 rows=40 id=json> </textarea>
+
+
+<div id=content>
+</div>
+
+
+

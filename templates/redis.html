@@ -11,7 +11,7 @@
     width: 800pt;
     float: left;
     border: 1px solid;
-    min-height: 600pt;
+    min-height: 400pt;
     padding: 2em;
 }
 table{
@@ -29,9 +29,11 @@ li{
 <script>
 function get()
 {
+    $(this).parent().find('li').css('color', 'black');
+    $(this).css('color', 'blue');
     key = $(this).text();
     $.ajax({
-        url: "/redis/KEYS/" + key,
+        url: redis_localtion() + "KEYS/" + key,
         dataType: "json",
         success: function(data){
             var c = $('div#value').html('');
@@ -57,45 +59,43 @@ function get()
         },
     })
 }
-$.ajax({
-    url: "/redis/KEYS",
-    dataType: "json",
-    success: function(data){
-        var list = $("div#keys ul");
-        list.html('');
-        for( i in  data){
-            var k = data[i];
-            var s = $("<li>").text(k);
-            s.click(get);
-            list.append(s);
-        }
-    },
-})
 
-$.ajax({
-    url: "/redis/Set",
-    dataType: "json",
-    success: function(data){
-        var setting = $("div#setting");
-        setting.find('#host').text(data[0]);
-        setting.find('#port').text(data[1]);
-        setting.find('#db').text(data[2]);
-    },
+function redis_localtion(){
+    var host = $('div#setting input[name=host]').val()
+    var port = $('div#setting input[name=port]').val()
+    var db = $('div#setting input[name=db]').val()
+    return "/redis/" + host + "/" + port + "/" + db + '/';
+}
+$(document).ready(function(){
+    $.ajax({
+        url:  redis_localtion() + "KEYS",
+        dataType: "json",
+        success: function(data){
+            var list = $("div#keys ul");
+            list.html('');
+            for( i in  data){
+                var k = data[i];
+                var s = $("<li>").text(k);
+                s.click(get);
+                list.append(s);
+            }
+        },
+    })
 })
 </script>
 
 <div id=setting>
-    <label>HOST:</label> <span id=host></span>
+    <label>HOST:</label> <input name=host value="127.0.0.1">
     &nbsp;
     &nbsp;
     &nbsp;
     &nbsp;
-    <label>PORT:</label> <span id=port></span>
+    <label>PORT:</label> <input name=port value="6379">
     &nbsp;
     &nbsp;
     &nbsp;
     &nbsp;
-    <label>DB:</label> <span id=db></span>
+    <label>DB:</label> <input name=db value="0">
 </div>
 
 <hr />
@@ -106,8 +106,8 @@ $.ajax({
 
 <div id=content>
     <div id=info>
-        <label>KEY:</label> <span id=key></span><br />
-        <label>类型:</label> <span id=type></span><br />
+        <label>KEY:&nbsp;&nbsp;</label> <span id=key></span><br />
+        <label>类型:&nbsp;</label> <span id=type></span><br />
     </div>
 <br /><br />
 <hr />

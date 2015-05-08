@@ -1,0 +1,35 @@
+<style>
+#wrap{
+    margin:auto;
+}
+table{
+    margin:auto;
+}
+</style>
+<script src='/static/js/jquery.js'></script>
+<script src='/static/js/cookie.js'></script>
+<body>
+<div id=wrap >
+    <table>
+        <tr><td><label>STMP:</label></td><td><input name = SMTP ><br /></td></tr>
+        <tr><td><label>IMAP:</label></td><td><input name = IMAP ><br /></td></tr>
+        <tr><td><label>User:</label></td><td><input name = user ><br /></td></tr>
+        <tr><td><label>PWD:</label> </td><td><input name = pwd ><br /></td></tr>
+    </table>
+    <button id=submit>Submit</button>
+</div>
+在邮箱里创建 TODOLIST 文件夹. 把来自本邮箱并且Subject 包含有TODO 的邮件
+自动过滤到这个文件夹下.
+<script>
+$('button').click(function(){
+    $('div#wrap table').find('input').each(function(){
+        var name = $(this).attr('name');
+        $.cookie(name, $(this).val());
+    });
+    window.location.pathname = '/todo/';
+
+
+});
+</script>
+</body>
+

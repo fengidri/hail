@@ -3,7 +3,6 @@
 #    time      :   2015-05-06 12:15:59
 #    email     :   fengidri@yeah.net
 #    version   :   1.0.1
-from __future__ import absolute_import
 import os
 import sys
 import redis
@@ -12,43 +11,57 @@ from cottle import handle
 
 name = 'redis'
 
-RHOST = '127.0.0.1'
-RPORT = 6379
-RDB   = 0
 class index(handle):
     def GET(self):
         return self.template('redis')
 
-class Set(handle):
-    def GET(self):
-        return json.dumps((RHOST, RPORT, RDB))
+class RedisOptions(handle):
+    def Before(self):
+        host = self.params[0]
+        port = self.params[1]
+        db   = self.params[2]
+        try:
+            self.red = redis.Redis(port = port, host = host, db = db)
+        except:
+            self.abort(500, '%s/%s/%s Error' % (host, port, db))
+        return True
 
-class KEYS(handle):
-    def GET(self):
-        red = redis.Redis(port = RPORT, host = RHOST, db = RDB)
-        return json.dumps(red.keys())
+    def After(self):
+        del self.red
 
-class KEYS_KEY(handle):
-    def GET(self, key):
-        red = redis.Redis(port = RPORT, host = RHOST, db = RDB)
+class KEYS(RedisOptions):
+    def GET(self):
+        return self.red.keys()
+
+class KEYS_KEY(RedisOptions):
+    def GET(self):
+        red = self.red
+        key = self.params[-1]
         t = red.type(key)
         res = {'type': t, 'value': None}
         if t == 'none':
-            res['value'] = None
+            value = None
 
         if t == 'hash':
-            res['value'] = red.hgetall(key)
+            value = red.hgetall(key)
 
         if t == 'string':
-            res['value'] = red.get(key)
-        return json.dumps(res)
+            value = red.get(key)
+
+        if t == 'set':
+            value = red.smembers(key)
+
+        if t == 'list':
+            value = red.lrange(key, 0, -1)
+
+        res['value'] = value
+        return res
 
 
 urls = (
-        'Set', Set,
         '/', index,
-        "/KEYS", KEYS,
-        "/KEYS/(.+)", KEYS_KEY,
+        "/([^/]+)/([^/]+)/([^/]+)/KEYS", KEYS,
+        "/([^/]+)/([^/]+)/([^/]+)/KEYS/(.+)", KEYS_KEY,
         )
 
 

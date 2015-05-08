@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>Upload</title>
-    <script src='/js/jquery.js'></script>
+    <script src='/static/js/jquery.js'></script>
 <script>
     function upload_request(url, flag, filename, content)
     {
@@ -35,7 +35,7 @@
         var name = file.name;              //文件名
         var size = file.size;              //总大小
 
-        var shardSize = 20 * 1024; 
+        var shardSize = 20 * 1024;
         var shardCount = Math.ceil(size / shardSize);  //总片数
         proc.text("(Start...)");
 

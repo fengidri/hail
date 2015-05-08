@@ -1,0 +1,26 @@
+<html>
+<head>
+<script src='/static/js/jquery.js'></script>
+<script src='/static/js/cookie.js'></script>
+</head>
+<body>
+    <div id=todos>
+        <ul>
+        </ul>
+    </div>
+</body>
+<script>
+$.ajax({
+    url: '/todo/todo',
+    dataType: 'json',
+    success: function(todos){
+        var list = $('div#todos ul');
+        for(i in todos){
+            var t = $('<li>').text(todos[i][1]);
+            list.append(t);
+        }
+    }
+});
+
+</script>
+</html>
