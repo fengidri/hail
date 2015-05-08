@@ -11,10 +11,10 @@ table{
 <body>
 <div id=wrap >
     <table>
+        <tr><td><label>User:</label></td><td><input name = user ><br /></td></tr>
         <tr><td><label>STMP:</label></td><td><input name = SMTP ><br /></td></tr>
         <tr><td><label>IMAP:</label></td><td><input name = IMAP ><br /></td></tr>
-        <tr><td><label>User:</label></td><td><input name = user ><br /></td></tr>
-        <tr><td><label>PWD:</label> </td><td><input name = pwd ><br /></td></tr>
+        <tr><td><label>PWD:</label> </td><td><input type=password name = pwd ><br /></td></tr>
     </table>
     <button id=submit>Submit</button>
 </div>
@@ -27,8 +27,15 @@ $('button').click(function(){
         $.cookie(name, $(this).val());
     });
     window.location.pathname = '/todo/';
-
-
+});
+$('div#wrap input[name=user]').blur(function(){
+    var reg = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/;
+    var email = $(this).val();
+    if (reg.test(email)){
+        var pat = email.split('@')[1];
+        $('div#wrap input[name=SMTP]').val('smtp.' + pat);
+        $('div#wrap input[name=IMAP]').val('imap.' + pat);
+    };
 });
 </script>
 </body>

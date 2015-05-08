@@ -42,8 +42,8 @@ name = "todo"
 urls = (
 '', 'index',
 '/index', 'index',
-        '/set', 'Set',
-        '/todo', 'TODOs'
+'/set', 'Set',
+'/todo', 'TODOs'
 
         )
 
@@ -55,7 +55,6 @@ class todo(handle):
         user     = self.getcookie('user')
         if not (smtphost and imaphost and pwd and user):
             self.redirect('/todo/set')
-        print smtphost, imaphost, pwd, user
 
         self.em = Email(smtphost, imaphost, user, user, pwd)
         return True
@@ -78,6 +77,7 @@ class TODOs(todo):
     def POST(self):
         td_add(self.em, self.forms.get('todo'))
         self.redirect('/todo/index')
+        raise
 
 
 if __name__ == "__main__":
