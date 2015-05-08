@@ -39,7 +39,9 @@ def td_get(em, done = False):
     return todos
 
 name = "todo"
-urls = ('', 'index',
+urls = (
+'', 'index',
+'/index', 'index',
         '/set', 'Set',
         '/todo', 'TODOs'
 
@@ -72,6 +74,10 @@ class index(todo):
 class TODOs(todo):
     def GET(self):
         return td_get(self.em)
+
+    def POST(self):
+        td_add(self.em, self.forms.get('todo'))
+        self.redirect('/todo/index')
 
 
 if __name__ == "__main__":
