@@ -23,6 +23,9 @@ $.ajax({
             var t = $('<li>').text(todos[i][1]);
             list.append(t);
         }
+    },
+    error:function(data, code){
+        alert(code)
     }
 });
 
