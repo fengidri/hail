@@ -2,11 +2,28 @@
 <head>
 <script src='/static/js/jquery.js'></script>
 <script src='/static/js/cookie.js'></script>
+<style>
+#todos{
+    margin: auto;
+    width: 800px;
+}
+#todos ul li{
+    padding: 5px;
+}
+form{
+    margin: auto;
+    width: 700px;
+}
+form input{
+    width: 500px;
+    height: 30;
+    padding: 5;
+}
+</style>
 </head>
 <body>
     <form action='/todo/todo' method='POST'>
         <input name=todo>
-        <input type=submit>
     </form>
     <div id=todos>
         <ul>
@@ -14,14 +31,24 @@
     </div>
 </body>
 <script>
+function Complete(){
+    var uid = this.uid;
+    $.ajax({
+        url: '/todo/todo/' + uid,
+        type: 'put'
+    });
+}
 $.ajax({
     url: '/todo/todo',
     dataType: 'json',
     success: function(todos){
         var list = $('div#todos ul');
         for(i in todos){
-            var t = $('<li>').text(todos[i][1]);
+            var todo = todos[i];
+            var t = $('<li>').text(todo[1]);
+            t[0].uid = todo[2];
             list.append(t);
+            t.click(Complete);
         }
     },
     error:function(data, code){

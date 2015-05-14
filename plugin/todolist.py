@@ -17,12 +17,96 @@ from email.mime.text import MIMEText
 from email.header import Header
 from email.encoders import encode_base64
 import email
-class Message(object):
-    def __init__(self):
-        self.status = 'open'
-        self.flag = []
-        self.msg = ''
-        self.data = None
+import email.utils
+
+class Emsg(object):
+    def decode(self, h):
+        _h = u''
+        for m, charset in decode_header(h):
+            if charset == None:
+                _h += m
+            else:
+                _h += m.decode(charset)
+        return _h
+
+    def __init__(self, msg):
+        self.msg = email.message_from_string(msg)
+
+    def _addrs(self, addrs):
+        addrlist = []
+        regex = "(^.*)<(.*)>"
+        for addr in addrs.split(','):
+            addr = addr.strip()
+            match = re.search(regex, addr)
+            if not match:
+                infolist.append((addr.split('@')[0], addr))
+            else:
+                name = self.decode(match.group(1))
+                addr = match.group(2)
+                addrlist.append((name, addr))
+        return addrlist
+
+    def Header(self, field):
+        return self.msg[field]
+
+    @property
+    def Subject(self):
+        return self.decode(self.msg['Subject'])
+
+    @property
+    def To(self):
+        return self._addrs(self.msg['To'])
+
+    @property
+    def From(self):
+        return self._addrs(self.msg['From'])
+
+    @property
+    def Cc(self):
+        if cc == self.msg['Cc']:
+            return self._addrs(cc)
+        else:
+            return []
+    @property
+    def MsgId(self):
+        return self.msg['Message-Id']
+
+    @property
+    def InReplyTO(self):
+        return self.msg['In-Reply-To']
+
+    @property
+    def Date(self):
+        d = self.msg['Date']
+        if not d:
+            d = self.msg['Received'].split(';')[-1].strip()
+
+        return time.mktime(email.utils.parsedate(d))
+
+    @property
+    def Msg(self):
+        ms = []
+        for part in self.msg.walk():
+            ms.append(part)
+            # multipart/* are just containers
+            #if part.get_content_maintype() == 'multipart':
+            #    continue
+            #msg = part.get_payload(decode=True)
+        return ms
+
+class Message(Emsg):
+    def __init__(self, uid, msg):
+        Emsg.__init__(self, msg['RFC822'])
+        self.uid = uid
+
+    @property
+    def Msg(self):
+        for part in self.msg.walk():
+             #multipart/* are just containers
+            if part.get_content_maintype() == 'multipart':
+                continue
+            msg = part.get_payload(decode=True)
+        return msg
 
 
 class MsgItem(object):
@@ -79,25 +163,21 @@ class MsgItem(object):
     def ListItem(self, status = 'open'):
         ids = self.imap.search(['NOT DELETED'])
         ems = self.Fetch(ids)
-        print len(ems)
 
-        todos = []
+        todos = {}
+        reply = []
         for uid, e in ems.items():
-            e  = email.message_from_string(e['RFC822'])
-            for part in e.walk():
-                # multipart/* are just containers
-                if part.get_content_maintype() == 'multipart':
-                    continue
-                msg = part.get_payload(decode=True)
+            m = Message(uid, e)
 
-            t = e['received'].split(';')[-1]
+            if m.InReplyTO:
+                reply.append(m)
+            else:
+                todos[m.MsgId] = m
 
-            d = ' '.join(t.split()[0:5])
-            d = time.strptime(d, "%a, %m %b %Y %H:%M:%S")
-            d = time.strftime("%Y-%m-%d %H:%M:%S %a")
-            print msg, d
-            todos.append((d, msg, uid))
-        print todos
+        for r in reply:
+            print '***********', r
+            del todos[r.InReplyTO]
+
         return todos
 
 
@@ -124,42 +204,13 @@ class MsgItem(object):
 
 
 
-def td_add(em, todo):
-    em.Msg('TODOLIST', todo)
-    em.Send()
-
-def td_get(em, done = False):
-    em.mailbox = 'TODOLIST'
-    if done == True:
-        criterion = 'seen'
-    else:
-        criterion = 'Unseen'
-
-    ids = em.Search(criterion)
-    if not ids:
-        return []
-
-    es = em.Fetch(ids)
-    todos = []
-    for ID, e in es:
-        for part in e.walk():
-            # multipart/* are just containers
-            if part.get_content_maintype() == 'multipart':
-                continue
-            msg = part.get_payload(decode=True)
-        d = ' '.join(e['date'].split()[0:5])
-        d = time.strptime(d, "%a, %m %b %Y %H:%M:%S")
-        d = time.strftime("%Y-%m-%d %H:%M:%S %a")
-
-        todos.append((d, msg, ID))
-    return todos
-
 name = "todo"
 urls = (
 '', 'index',
 '/index', 'index',
 '/set', 'Set',
-'/todo', 'TODOs'
+'/todo', 'TODOs',
+'/todo/(\d+)', 'Option'
 
         )
 
@@ -187,12 +238,20 @@ class index(todo):
 
 class TODOs(todo):
     def GET(self):
-        return self.em.ListItem()
+        todos = []
+        for td in self.em.ListItem().values():
+            todos.append((td.uid, td.Msg, '1'))
+        return todos
 
     def POST(self):
         self.em.AddItem('TODO', self.forms.get('todo'))
         self.redirect('/todo/index')
-        raise
+
+class Option(todo):
+    def PUT(self):
+        uid = int(self.params[0])
+        self.em.CloseItem(uid = uid)
+        self.redirect('/todo/index')
 
 
 if __name__ == "__main__":

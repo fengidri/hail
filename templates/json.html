@@ -2,11 +2,27 @@
 <script src='/static/js/jquery.js'></script>
 <script src='/static/json/json.js'></script>
 <style>
-textarea{
+#input{
     float: left;
+    width: 400pt;
+    height: 600pt;
+}
+#input #text{
+    display: none;
+}
+input#url{
+    width: 100%;
+    padding: 0.5em;
 }
 #keys{
     width: 200pt;
+    padding: 0.3em;
+}
+#history{
+    border: 1px solid;
+    cursor:pointer;
+    padding: 0.5em;
+    margin-top: 0.2em;
 }
 #keys li{
     cursor:pointer;
@@ -50,17 +66,96 @@ li{
 </style>
 <script>
 $(document).ready(function(){
+    function history(){
+        var hs = localStorage.getItem("history");
+        if ( hs == null){
+            return [];
+        }
+        return $.parseJSON(hs);
+    }
+    function history_add(url){
+        var hs = history();
+        if ($.inArray(url, hs) > -1){
+            return;
+        }
+        hs.push(url);
+        localStorage.setItem("history", JSON.stringify(hs))
+    }
+    function get_from_net(url){
+       if (url.indexOf('http://') != 0)
+           url = 'http://' + url;
+       history_add(url);
+
+       $.ajax({
+           url: '/proxy/',
+           type: 'POST',
+           data: {'url': url},
+           dataType: 'json',
+           success: function(json){
+               $('div#content').html('');
+               dump(json, $('div#content'));
+           }
+       });
+    }
     $('#dump').click(function(){
+        $('div#content').html('');
         dump($.parseJSON($('textarea').val()), $('div#content'));
     });
+
+    $('input#url').bind('keypress',function(event){
+             if(event.keyCode != "13")
+                 return;
+             var url = $('input#url').val();
+             get_from_net(url);
+             show_history();
+    });
+    $('button#switch').click(function(){
+        if (this._s == 'text'){
+            this._s = 'net'
+            $('#input #text').hide();
+            $('#input #net').show();
+        }
+        else{
+            this._s = 'text'
+            $('#input #net').hide();
+            $('#input #text').show();
+        }
+
+    });
+    function show_history(){
+        var index;
+        var hs= history();
+        $('#input #net #historys').html('');
+        for( index in  hs){
+            var t= $('<div>');
+            t.text(hs[index]);
+            t.attr('id', 'history');
+            t.click(function(){
+                var t = $(this).text();
+                get_from_net(t);
+            });
+            $('#input #net #historys').append(t);
+        }
+    }
+    show_history();
 });
+
 </script>
-<button id=dump>Dump</button>
-<hr />
-<textarea cols=70 rows=40 id=json> </textarea>
+<div id=input>
+    <button id=switch>Switch</button>
+    <div id=text >
+        <textarea cols=50 rows=30 id=json> </textarea>
+        <button id=dump>Dump</button>
+    </div>
+    <div id=net>
+        <input id=url name=url >
+        <div id=historys></div>
+    </div>
+</div>
 
 
 <div id=content>
+    ...
 </div>
 
 

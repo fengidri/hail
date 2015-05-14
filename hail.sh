@@ -36,8 +36,16 @@ case $1 in
     stop)
         stop
         ;;
+    restart)
+        stop
+        sleep 1
+        start
+        ;;
     status)
         echo ''
+        ;;
+    reload)
+        uwsgi --reload $pidfile
         ;;
     log)
         tail -f  $logfile
