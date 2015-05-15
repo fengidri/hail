@@ -1,7 +1,7 @@
 <script src='/static/js/jquery.js'></script>
 <style>
 #keys{
-    width: 600pt;
+    width: 200pt;
     float: left;
 }
 #keys li{
@@ -33,21 +33,25 @@ function get()
 {
     $(this).parent().find('li').css('color', 'black');
     $(this).css('color', 'blue');
-    key = $(this).text();
+
+    var key = $(this).text();
+    var value = $('div#value').html('');
+    var value_type = $('div#content span#type').html('');
+    var value_key = $('div#content span#key').html('');
+
     $.ajax({
         url: redis_localtion() + "KEYS/" + key,
         dataType: "json",
         success: function(data){
-            var c = $('div#value').html('');
             $('div#content').css("display","block");
-            $('div#content span#type').text(data.type);
-            $('div#content span#key').text(key);
+            value_type.text(data.type);
+            value_key.text(key);
 
             if (data.type == 'none'){
                 return;
             }
             if (data.type == 'string'){
-                c.html(data.value);
+                value.html(data.value);
             }
             if (data.type == 'hash'){
                 var t = $('<table>');
@@ -57,7 +61,7 @@ function get()
                     tr.append($('<td>').text(data.value[k]));
                     t.append(tr);
                 }
-                c.append(t);
+                value.append(t);
             }
         },
     })
@@ -74,14 +78,16 @@ function refresh(){
         url:  redis_localtion() + "KEYS",
         dataType: "json",
         success: function(data){
+            var msg = $('div#keys #msg');
+            var list = $("div#keys ul");
+            msg.html('');
+            list.html('');
             if(!data.status)
             {
-                alert("连接出错");
+                $('div#keys #msg').html('连接出错......');
                 return;
             }
             data = data.data;
-            var list = $("div#keys ul");
-            list.html('');
             for( i in  data){
                 var k = data[i];
                 var s = $("<li>").text(k);
@@ -91,18 +97,39 @@ function refresh(){
         },
     })
 }
+function savecfg(){
+    localStorage.redis_host = $('input#host').val();
+    localStorage.redis_port = $('input#port').val();
+    localStorage.redis_db   = $('input#db').val();
+}
+
+function loadcfg(){
+    var host = localStorage.redis_host;
+    var port = localStorage.redis_port;
+    var db = localStorage.redis_db;
+    if (host == null) host = '127.0.0.1';
+    if (port == null) port = 6379;
+    if (db   == null) db = 0;
+    $('input#host').val(host);
+    $('input#port').val(port);
+    $('input#db').val(db);
+}
+
 $(document).ready(function(){
-    // refresh();
+    loadcfg();
+
+    refresh();
     $('#refresh').click(refresh);
+    $('input#host, input#port, input#db').blur(savecfg);
 })
 </script>
 
 <div id="setting">
-    <label>HOST:</label> <input name=host value="127.0.0.1">
+    <label>HOST:</label> <input id=host name=host value="127.0.0.1">
     &nbsp; &nbsp; &nbsp; &nbsp;
-    <label>PORT:</label> <input name=port value="6379">
+    <label>PORT:</label> <input id=port name=port value="6379">
     &nbsp; &nbsp; &nbsp; &nbsp;
-    <label>DB:</label> <input name=db value="0">
+    <label>DB:</label> <input id=db name=db value="0">
     &nbsp; &nbsp; &nbsp; &nbsp;
     <button id="refresh">Refresh</button>
 
@@ -110,6 +137,7 @@ $(document).ready(function(){
 
 <hr />
 <div id="keys">
+    <span id=msg></span><br />
     <ul>
     </ul>
 </div>
@@ -119,8 +147,8 @@ $(document).ready(function(){
         <label>KEY:&nbsp;&nbsp;</label> <span id="key"></span><br />
         <label>类型:&nbsp;</label> <span id="type"></span><br />
     </div>
-<br /><br />
-<hr />
+        <br /><br />
+        <hr />
     <div id="value">
     </div>
 </div>
