@@ -61,7 +61,7 @@ class KEYS_KEY(RedisOptions):
             value = red.lrange(key, 0, -1)
 
         res['value'] = value
-        return res
+        return json.dumps(res, ensure_ascii=False)
 
 
 urls = (
