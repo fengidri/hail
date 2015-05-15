@@ -1,18 +1,20 @@
 <script src='/static/js/jquery.js'></script>
 <style>
 #keys{
-    width: 200pt;
+    width: 600pt;
     float: left;
 }
 #keys li{
     cursor:pointer;
 }
 #content{
-    width: 800pt;
+    width: 600pt;
     float: left;
-    border: 1px solid;
+    border: none;
+    border-left: 1px solid #b0b0b0;
     min-height: 400pt;
     padding: 2em;
+    display: none;
 }
 table{
     border-collapse:collapse;
@@ -37,6 +39,7 @@ function get()
         dataType: "json",
         success: function(data){
             var c = $('div#value').html('');
+            $('div#content').css("display","block");
             $('div#content span#type').text(data.type);
             $('div#content span#key').text(key);
 
@@ -61,9 +64,9 @@ function get()
 }
 
 function redis_localtion(){
-    var host = $('div#setting input[name=host]').val()
-    var port = $('div#setting input[name=port]').val()
-    var db = $('div#setting input[name=db]').val()
+    var host = $('div#setting input[name=host]').val();
+    var port = $('div#setting input[name=port]').val();
+    var db = $('div#setting input[name=db]').val();
     return "/redis/" + host + "/" + port + "/" + db + '/';
 }
 function refresh(){
@@ -71,6 +74,12 @@ function refresh(){
         url:  redis_localtion() + "KEYS",
         dataType: "json",
         success: function(data){
+            if(!data.status)
+            {
+                alert("连接出错");
+                return;
+            }
+            data = data.data;
             var list = $("div#keys ul");
             list.html('');
             for( i in  data){
@@ -83,36 +92,36 @@ function refresh(){
     })
 }
 $(document).ready(function(){
-    refresh();
+    // refresh();
     $('#refresh').click(refresh);
 })
 </script>
 
-<div id=setting>
+<div id="setting">
     <label>HOST:</label> <input name=host value="127.0.0.1">
     &nbsp; &nbsp; &nbsp; &nbsp;
     <label>PORT:</label> <input name=port value="6379">
     &nbsp; &nbsp; &nbsp; &nbsp;
     <label>DB:</label> <input name=db value="0">
     &nbsp; &nbsp; &nbsp; &nbsp;
-    <button id=refresh>Refresh</button>
+    <button id="refresh">Refresh</button>
 
 </div>
 
 <hr />
-<div id=keys>
+<div id="keys">
     <ul>
     </ul>
 </div>
 
-<div id=content>
-    <div id=info>
-        <label>KEY:&nbsp;&nbsp;</label> <span id=key></span><br />
-        <label>类型:&nbsp;</label> <span id=type></span><br />
+<div id="content">
+    <div id="info">
+        <label>KEY:&nbsp;&nbsp;</label> <span id="key"></span><br />
+        <label>类型:&nbsp;</label> <span id="type"></span><br />
     </div>
 <br /><br />
 <hr />
-    <div id=value>
+    <div id="value">
     </div>
 </div>
 

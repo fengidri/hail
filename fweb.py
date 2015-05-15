@@ -19,6 +19,7 @@ site_packages = os.path.join(curdir, 'site-packages')
 
 sys.path.insert(0, site_packages)
 import cottle
+from cottle import config
 logging.basicConfig(level=logging.DEBUG,
         format='%(asctime)s %(levelname)s: %(message)s'
 #       ,filename="/home/log/voscfg/voscfg.log"
@@ -30,8 +31,11 @@ opts = {
         'pre_static' : '/static'
         }
 
+
+cfg = config.config()
+cfg.host = "0.0.0.0"
 application = app = cottle.Cottle(opts)
 
 if __name__ == "__main__":
-    app.run()
+    app.run(cfg)
 
