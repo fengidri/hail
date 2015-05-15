@@ -31,7 +31,13 @@ class RedisOptions(handle):
 
 class KEYS(RedisOptions):
     def GET(self):
-        return self.red.keys()
+        try:
+            data = self.red.keys()
+            return {"status":True, "data":data}
+
+        except:
+            return {"status":False}
+
 
 class KEYS_KEY(RedisOptions):
     def GET(self):
