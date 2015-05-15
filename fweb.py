@@ -24,7 +24,6 @@ logging.basicConfig(level=logging.DEBUG,
 #       ,filename="/home/log/voscfg/voscfg.log"
         )
 
-logging.info('start cfg......')
 opts = {
         'plugin': plugin_path,
         'path_static' : static_path,
