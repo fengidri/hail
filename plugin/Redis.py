@@ -20,6 +20,7 @@ class RedisOptions(handle):
         host = self.params[0]
         port = self.params[1]
         db   = self.params[2]
+
         try:
             self.red = redis.Redis(port = port, host = host, db = db)
         except:
@@ -31,8 +32,10 @@ class RedisOptions(handle):
 
 class KEYS(RedisOptions):
     def GET(self):
+        _filter = self.query.get("filter", "*")
+
         try:
-            data = self.red.keys()
+            data = self.red.keys(_filter)
             return {"status":True, "data":data}
 
         except:
