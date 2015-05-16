@@ -58,6 +58,9 @@ class KEYS_KEY(RedisOptions):
         if t == 'list':
             value = red.lrange(key, 0, -1)
 
+        if t == 'zset':
+            value = red.zrange(key, 0, -1)
+
         res = {'type': t, 'value': value}
         return json.dumps(res, ensure_ascii=False)
 
