@@ -38,6 +38,7 @@ function get()
     var value = $('div#value').html('');
     var value_type = $('div#content span#type').html('');
     var value_key = $('div#content span#key').html('');
+    var value_num  = $('div#content span#num').html('');
 
     $.ajax({
         url: redis_localtion() + "KEYS/" + key,
@@ -55,12 +56,15 @@ function get()
             }
             if (data.type == 'hash'){
                 var t = $('<table>');
+                var l = 0;
                 for (k in data.value){
                     var tr = $('<tr>');
                     tr.append($('<td>').text(k));
                     tr.append($('<td>').text(data.value[k]));
                     t.append(tr);
+                    l += 1;
                 }
+                value_num.html(l);
                 value.append(t);
             }
         },
@@ -80,6 +84,8 @@ function refresh(){
         success: function(data){
             var msg = $('div#keys #msg');
             var list = $("div#keys ul");
+            var num = $('div#keys #num');
+            num.html('');
             msg.html('');
             list.html('');
             if(!data.status)
@@ -87,6 +93,7 @@ function refresh(){
                 $('div#keys #msg').html('连接出错......');
                 return;
             }
+            num.html('Num: ' + data.data.length);
             data = data.data;
             for( i in  data){
                 var k = data[i];
@@ -137,7 +144,7 @@ $(document).ready(function(){
 
 <hr />
 <div id="keys">
-    <span id=msg></span><br />
+    <span id=msg></span><span id=num></span><br />
     <ul>
     </ul>
 </div>
@@ -146,6 +153,7 @@ $(document).ready(function(){
     <div id="info">
         <label>KEY:&nbsp;&nbsp;</label> <span id="key"></span><br />
         <label>类型:&nbsp;</label> <span id="type"></span><br />
+        <label>NUM:&nbsp;</label> <span id="num"></span><br />
     </div>
         <br /><br />
         <hr />
