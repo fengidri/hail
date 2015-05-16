@@ -18,7 +18,6 @@
 }
 table{
     border-collapse:collapse;
-    border: 1px solid;
 }
 table td{
     padding: 0.5em;
@@ -30,6 +29,10 @@ li{
 
 div#keys #msg{
     color: red;
+}
+.index_table tr td:first-child{
+    border: 0pt;
+    color: grey;
 }
 
 </style>
@@ -44,11 +47,14 @@ function get()
     var value_type = $('div#content span#type').html('');
     var value_key = $('div#content span#key').html('');
     var value_num  = $('div#content span#num').html('');
+    var msg = $('#info #msg');
+    msg.html('loading ...');
 
     $.ajax({
         url: redis_localtion() + "KEYS/" + key,
         dataType: "json",
         success: function(data){
+            msg.html('');
             $('div#content').css("display","block");
             value_type.text(data.type);
             value_key.text(key);
@@ -64,13 +70,18 @@ function get()
             var l = 0;
             for (k in data.value){
                 var tr = $("<tr>");
-                tr.append($("<td>").text(k));
+                var td = $("<td>").text(k);
+                tr.append(td);
+
                 tr.append($("<td>").text(data.value[k]));
                 t.append(tr);
                 l += 1;
             }
             value_num.html(l);
             value.append(t);
+            if (data.type != 'hash'){
+                t.attr('class', 'index_table');
+            }
             return;
         },
     })
@@ -171,9 +182,10 @@ $(document).ready(function(){
 
 <div id= "content" >
     <div id= "info" >
-        <label>KEY:&nbsp;&nbsp;</label> <span id="key"></span><br />
+        <label>KEY:&nbsp;&nbsp;</label><span id="key"></span><br />
         <label>类型:&nbsp;</label> <span id="type"></span><br />
         <label>NUM:&nbsp;</label> <span id="num"></span><br />
+        <label id='msg'></label>
     </div>
         <br /><br />
         <hr />
