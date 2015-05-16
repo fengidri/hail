@@ -44,10 +44,8 @@ class KEYS_KEY(RedisOptions):
         red = self.red
         key = self.params[-1]
         t = red.type(key)
-        res = {'type': t, 'value': None}
-        if t == 'none':
-            value = None
 
+        value = None
         if t == 'hash':
             value = red.hgetall(key)
 
@@ -60,7 +58,7 @@ class KEYS_KEY(RedisOptions):
         if t == 'list':
             value = red.lrange(key, 0, -1)
 
-        res['value'] = value
+        res = {'type': t, 'value': value}
         return json.dumps(res, ensure_ascii=False)
 
 
