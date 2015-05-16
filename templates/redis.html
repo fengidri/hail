@@ -1,7 +1,7 @@
 <script src='/static/js/jquery.js'></script>
 <style>
 #keys{
-    /*width: 200pt;*/
+    min-width: 200pt;
     float: left;
 }
 #keys li{
@@ -34,6 +34,10 @@ div#keys #msg{
     border: 0pt;
     color: grey;
 }
+div#setting input{
+    border: none;
+    border-bottom: solid 1px grey;
+}
 
 </style>
 <script>
@@ -53,6 +57,7 @@ function get()
     $.ajax({
         url: redis_localtion() + "KEYS/" + key,
         dataType: "json",
+        async:false,
         success: function(data){
             msg.html('');
             $('div#content').css("display","block");
@@ -102,6 +107,8 @@ function refresh(){
     var msg = $('div#keys #msg');
     var list = $("div#keys ul");
     var num = $('div#keys #num');
+    var value = $('div#value');
+    value.html('');
     num.html('');
     msg.html('');
     list.html('');
@@ -112,6 +119,7 @@ function refresh(){
     $.ajax({
         url: url,
         dataType: "json",
+        async:false,
         success: function(data){
             if(!data.status)
             {
@@ -151,25 +159,48 @@ function loadcfg(){
     $('input#filter').val(filter);
 }
 
+function flushdb(){
+    if(!confirm("确定清空当前数据库？")) return;
+
+    var url = redis_localtion() + "DB";
+    $.ajax({
+        url: url,
+        type: "delete",
+        async:false,
+        success:function(data){
+            alert("清除成功！");
+            refresh( );
+        },
+        error:function(textStatus){
+            alert(textStatus);
+            refresh( );
+
+        }
+    });
+}
+
 $(document).ready(function(){
     loadcfg();
 
     refresh();
     $('#refresh').click(refresh);
     $('input#host, input#port, input#db').blur(savecfg);
+    $('#flushdb').click(flushdb);
 })
 </script>
 
 <div id="setting">
-    <label>HOST:</label> <input id=host name=host value="127.0.0.1">
+    <label>HOST:</label> <input size="10" id=host name=host value="127.0.0.1">
     &nbsp; &nbsp; &nbsp; &nbsp;
-    <label>PORT:</label> <input id=port name=port value="6379">
+    <label>PORT:</label> <input size="6" id=port name=port value="6379">
     &nbsp; &nbsp; &nbsp; &nbsp;
-    <label>DB:</label> <input id=db name=db value="0">
+    <label>DB:</label> <input size="3" id=db name=db value="0">
     &nbsp; &nbsp; &nbsp; &nbsp;
-    <label>FILTER:</label> <input id="filter" name=filter value='*'>
+    <label>FILTER:</label> <input size="15" id="filter" name=filter value='*'>
     &nbsp; &nbsp; &nbsp; &nbsp;
     <button id="refresh">Refresh</button>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    <button id="flushdb">FlusDB</button>
 
 </div>
 

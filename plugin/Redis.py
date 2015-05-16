@@ -68,10 +68,18 @@ class KEYS_KEY(RedisOptions):
         return json.dumps(res, ensure_ascii=False)
 
 
+class DB(RedisOptions):
+    def DELETE(self):
+        red = self.red
+        red.flushdb()
+        return "ok"
+
+
 urls = (
         '/', index,
         "/([^/]+)/([^/]+)/([^/]+)/KEYS", KEYS,
         "/([^/]+)/([^/]+)/([^/]+)/KEYS/(.+)", KEYS_KEY,
+        "/([^/]+)/([^/]+)/([^/]+)/DB", DB,
         )
 
 
