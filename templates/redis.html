@@ -26,6 +26,9 @@ table td{
 li{
     margin: 1em;
 }
+button:hover{
+    cursor: pointer;
+}
 
 div#keys #msg{
     color: red;
@@ -37,6 +40,9 @@ div#keys #msg{
 div#setting input{
     border: none;
     border-bottom: solid 1px grey;
+}
+button#delete{
+    float: right;
 }
 
 </style>
@@ -107,11 +113,13 @@ function refresh(){
     var msg = $('div#keys #msg');
     var list = $("div#keys ul");
     var num = $('div#keys #num');
-    var value = $('div#value');
-    value.html('');
+
     num.html('');
     msg.html('');
     list.html('');
+
+    flush_value();
+
     if(filter == ""){
         msg.html("waring: filter is empty!<br>");
     }
@@ -179,6 +187,40 @@ function flushdb(){
     });
 }
 
+function delete_key(){
+    var url = redis_localtion();
+    var keys = $("div#content #key").text();
+
+    if(!confirm("确定删除key:" + keys)) return;
+
+    url += "KEYS?key=" + encodeURIComponent(keys);
+    $.ajax({
+        url: url,
+        type:"delete",
+        success:function(data){
+            alert("删除成功！");
+            refresh();
+        },
+        error:function(textStatus){
+            alert(textStatus);
+            refresh();
+        }
+    });
+}
+
+function flush_value()
+{
+    var value = $('div#value');
+    var key = $("div#info span#key");
+    var type = $("div#info span#type");
+    var num = $("div#info span#num");
+    value.html('');
+    key.html('');
+    type.html('');
+    num.html('');
+
+}
+
 $(document).ready(function(){
     loadcfg();
 
@@ -186,6 +228,7 @@ $(document).ready(function(){
     $('#refresh').click(refresh);
     $('input#host, input#port, input#db').blur(savecfg);
     $('#flushdb').click(flushdb);
+    $('#delete').click(delete_key);
 })
 </script>
 
@@ -213,6 +256,7 @@ $(document).ready(function(){
 
 <div id= "content" >
     <div id= "info" >
+        <button id=delete >delete</button>
         <label>KEY:&nbsp;&nbsp;</label><span id="key"></span><br />
         <label>类型:&nbsp;</label> <span id="type"></span><br />
         <label>NUM:&nbsp;</label> <span id="num"></span><br />

@@ -41,6 +41,12 @@ class KEYS(RedisOptions):
         except:
             return {"status":False}
 
+    def DELETE(self):
+        key = self.query.get("key"," ")
+        red = self.red
+        red.delete(key)
+        return "ok"
+
 
 class KEYS_KEY(RedisOptions):
     def GET(self):
@@ -66,6 +72,7 @@ class KEYS_KEY(RedisOptions):
 
         res = {'type': t, 'value': value}
         return json.dumps(res, ensure_ascii=False)
+
 
 
 class DB(RedisOptions):
