@@ -1,7 +1,7 @@
 <script src='/static/js/jquery.js'></script>
 <style>
 #keys{
-    width: 200pt;
+    /*width: 200pt;*/
     float: left;
 }
 #keys li{
@@ -129,12 +129,15 @@ function loadcfg(){
     var host = localStorage.redis_host;
     var port = localStorage.redis_port;
     var db = localStorage.redis_db;
+    var filter = localStorage.filter;
     if (host == null) host = '127.0.0.1';
     if (port == null) port = 6379;
     if (db   == null) db = 0;
+    if (filter == null) filter = "*"
     $('input#host').val(host);
     $('input#port').val(port);
     $('input#db').val(db);
+    $('input#filter').val(filter);
 }
 
 $(document).ready(function(){
