@@ -2,19 +2,27 @@
 <style>
 #keys{
     min-width: 200pt;
-    float: left;
+    max-width: 50%;
+    display: inline-block;
+    vertical-align: top;
 }
 #keys li{
     cursor:pointer;
 }
 #content{
+    vertical-align: top;
     width: 600pt;
-    float: left;
+    display: inline-block;
     border: none;
     border-left: 1px solid #b0b0b0;
     min-height: 400pt;
-    padding: 2em;
-    display: none;
+    padding-left: 2em;
+    display: inline-block;
+}
+#content #value{
+    overflow: auto;
+    border: 2px solid green;
+    padding: 1em;
 }
 table{
     border-collapse:collapse;
@@ -54,6 +62,7 @@ function get()
 
     var key = $(this).text();
     var value = $('div#value').html('');
+
     var value_type = $('div#content span#type').html('');
     var value_key = $('div#content span#key').html('');
     var value_num  = $('div#content span#num').html('');
@@ -66,7 +75,8 @@ function get()
         async:false,
         success: function(data){
             msg.html('');
-            $('div#content').css("display","block");
+
+
             value_type.text(data.type);
             value_key.text(key);
 
@@ -114,6 +124,13 @@ function refresh(){
     var list = $("div#keys ul");
     var num = $('div#keys #num');
 
+    var height = document.body.clientHeight - $('div#keys').offset().top;
+    $('div#keys').css('height', height - 10);
+
+    var value = $('div#value').html('');
+    var height = document.body.clientHeight - value.offset().top;
+    value.css('height', height - 60);
+
     num.html('');
     msg.html('');
     list.html('');
@@ -142,6 +159,9 @@ function refresh(){
                 s.click(get);
                 list.append(s);
             }
+    var content = $('div#content');
+    var width = document.body.clientWidth - content.offset().left;
+    content.css("width",width - 100);
         },
     })
 }
@@ -262,7 +282,7 @@ $(document).ready(function(){
         <label>NUM:&nbsp;</label> <span id="num"></span><br />
         <label id='msg'></label>
     </div>
-        <br /><br />
+        <br />
         <hr />
     <div id="value">
     </div>
