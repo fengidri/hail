@@ -20,6 +20,7 @@ class RedisOptions(handle):
         host = self.params[0]
         port = self.params[1]
         db   = self.params[2]
+
         try:
             self.red = redis.Redis(port = port, host = host, db = db)
         except:
@@ -31,12 +32,20 @@ class RedisOptions(handle):
 
 class KEYS(RedisOptions):
     def GET(self):
+        _filter = self.query.get("filter", "*")
+
         try:
-            data = self.red.keys()
+            data = self.red.keys(_filter)
             return {"status":True, "data":data}
 
         except:
             return {"status":False}
+
+    def DELETE(self):
+        key = self.query.get("key"," ")
+        red = self.red
+        red.delete(key)
+        return "ok"
 
 
 class KEYS_KEY(RedisOptions):
@@ -44,10 +53,8 @@ class KEYS_KEY(RedisOptions):
         red = self.red
         key = self.params[-1]
         t = red.type(key)
-        res = {'type': t, 'value': None}
-        if t == 'none':
-            value = None
 
+        value = None
         if t == 'hash':
             value = red.hgetall(key)
 
@@ -60,14 +67,26 @@ class KEYS_KEY(RedisOptions):
         if t == 'list':
             value = red.lrange(key, 0, -1)
 
-        res['value'] = value
+        if t == 'zset':
+            value = red.zrange(key, 0, -1)
+
+        res = {'type': t, 'value': value}
         return json.dumps(res, ensure_ascii=False)
+
+
+
+class DB(RedisOptions):
+    def DELETE(self):
+        red = self.red
+        red.flushdb()
+        return "ok"
 
 
 urls = (
         '/', index,
         "/([^/]+)/([^/]+)/([^/]+)/KEYS", KEYS,
         "/([^/]+)/([^/]+)/([^/]+)/KEYS/(.+)", KEYS_KEY,
+        "/([^/]+)/([^/]+)/([^/]+)/DB", DB,
         )
 
 

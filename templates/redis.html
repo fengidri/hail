@@ -1,153 +1,95 @@
 <script src='/static/js/jquery.js'></script>
+<script src='/static/redis/redis.js'></script>
 <style>
 #keys{
-    width: 200pt;
-    float: left;
+    min-width: 200pt;
+    max-width: 50%;
+    display: inline-block;
+    vertical-align: top;
 }
 #keys li{
     cursor:pointer;
 }
 #content{
+    vertical-align: top;
     width: 600pt;
-    float: left;
+    display: inline-block;
     border: none;
     border-left: 1px solid #b0b0b0;
     min-height: 400pt;
-    padding: 2em;
-    display: none;
+    padding-left: 2em;
+    display: inline-block;
+}
+#content #value{
+    overflow: auto;
+    border: 2px solid green;
+    padding: 1em;
 }
 table{
     border-collapse:collapse;
-    border: 1px solid;
 }
 table td{
     padding: 0.5em;
     border: 1px solid;
 }
+ul{
+    padding: 0em;
+}
 li{
     margin: 1em;
 }
+button:hover{
+    cursor: pointer;
+}
+
+div#keys #msg{
+    color: red;
+}
+.index_table tr td:first-child{
+    border: 0pt;
+    color: grey;
+}
+div#setting input{
+    border: none;
+    border-bottom: solid 1px grey;
+}
+button#delete{
+    float: right;
+}
+
 </style>
-<script>
-function get()
-{
-    $(this).parent().find('li').css('color', 'black');
-    $(this).css('color', 'blue');
-
-    var key = $(this).text();
-    var value = $('div#value').html('');
-    var value_type = $('div#content span#type').html('');
-    var value_key = $('div#content span#key').html('');
-
-    $.ajax({
-        url: redis_localtion() + "KEYS/" + key,
-        dataType: "json",
-        success: function(data){
-            $('div#content').css("display","block");
-            value_type.text(data.type);
-            value_key.text(key);
-
-            if (data.type == 'none'){
-                return;
-            }
-            if (data.type == 'string'){
-                value.html(data.value);
-            }
-            if (data.type == 'hash'){
-                var t = $('<table>');
-                for (k in data.value){
-                    var tr = $('<tr>');
-                    tr.append($('<td>').text(k));
-                    tr.append($('<td>').text(data.value[k]));
-                    t.append(tr);
-                }
-                value.append(t);
-            }
-        },
-    })
-}
-
-function redis_localtion(){
-    var host = $('div#setting input[name=host]').val();
-    var port = $('div#setting input[name=port]').val();
-    var db = $('div#setting input[name=db]').val();
-    return "/redis/" + host + "/" + port + "/" + db + '/';
-}
-function refresh(){
-    $.ajax({
-        url:  redis_localtion() + "KEYS",
-        dataType: "json",
-        success: function(data){
-            var msg = $('div#keys #msg');
-            var list = $("div#keys ul");
-            msg.html('');
-            list.html('');
-            if(!data.status)
-            {
-                $('div#keys #msg').html('连接出错......');
-                return;
-            }
-            data = data.data;
-            for( i in  data){
-                var k = data[i];
-                var s = $("<li>").text(k);
-                s.click(get);
-                list.append(s);
-            }
-        },
-    })
-}
-function savecfg(){
-    localStorage.redis_host = $('input#host').val();
-    localStorage.redis_port = $('input#port').val();
-    localStorage.redis_db   = $('input#db').val();
-}
-
-function loadcfg(){
-    var host = localStorage.redis_host;
-    var port = localStorage.redis_port;
-    var db = localStorage.redis_db;
-    if (host == null) host = '127.0.0.1';
-    if (port == null) port = 6379;
-    if (db   == null) db = 0;
-    $('input#host').val(host);
-    $('input#port').val(port);
-    $('input#db').val(db);
-}
-
-$(document).ready(function(){
-    loadcfg();
-
-    refresh();
-    $('#refresh').click(refresh);
-    $('input#host, input#port, input#db').blur(savecfg);
-})
-</script>
 
 <div id="setting">
-    <label>HOST:</label> <input id=host name=host value="127.0.0.1">
-    &nbsp; &nbsp; &nbsp; &nbsp;
-    <label>PORT:</label> <input id=port name=port value="6379">
-    &nbsp; &nbsp; &nbsp; &nbsp;
-    <label>DB:</label> <input id=db name=db value="0">
-    &nbsp; &nbsp; &nbsp; &nbsp;
+    <label>HOST:</label><input size="10" id=host name=host value="127.0.0.1">
+    &nbsp;&nbsp;
+    <label>PORT:</label><input size="6" id=port name=port value="6379">
+    &nbsp;&nbsp;
+    <label>DB:</label><input size="3" id=db name=db value="0">
+    &nbsp;&nbsp;
+    <label>FILTER:</label><input size="15" id="filter" name=filter value='*'>
+    &nbsp;&nbsp;
     <button id="refresh">Refresh</button>
+    &nbsp;&nbsp;
+    <button id="flushdb">FlusDB</button>
 
 </div>
 
 <hr />
 <div id="keys">
-    <span id=msg></span><br />
+    <span id=msg > </span> <span id=num > </span> <br />
     <ul>
     </ul>
 </div>
 
-<div id="content">
-    <div id="info">
-        <label>KEY:&nbsp;&nbsp;</label> <span id="key"></span><br />
+<div id= "content" >
+    <div id= "info" >
+        <button id=delete >delete</button>
+        <label>KEY:&nbsp;&nbsp;</label><span id="key"></span><br />
         <label>类型:&nbsp;</label> <span id="type"></span><br />
+        <label>NUM:&nbsp;</label> <span id="num"></span><br />
+        <label id='msg'></label>
     </div>
-        <br /><br />
+        <br />
         <hr />
     <div id="value">
     </div>
