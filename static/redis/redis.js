@@ -136,7 +136,6 @@ function flushdb(){
         type: "delete",
         async:false,
         success:function(data){
-            alert("清除成功！");
             refresh( );
         },
         error:function(textStatus){
