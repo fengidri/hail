@@ -3,16 +3,20 @@
 <script src='/static/zeroclipboard/ZeroClipboard.js'></script>
 <script>
 var TEXT;
+var INDEX = -1;
 function myInterval()
 {
     $.ajax({
-        url: "/autofresh/data",
+        url: "/autofresh/data?index=" + INDEX,
+        dataType: 'json',
         success: function(data){
-            if (TEXT == data) return;
-            TEXT = data;
-            $("#doc").html(data);
+            if (INDEX == data[0]) return;
+            INDEX = data[0];
+            TEXT = data[1];
+
+            $("#doc").html(TEXT);
             $("#pages").text(Math.floor($('#doc').height()/1176 + 1));
-            $("#source").attr("data-clipboard-text", data);
+            $("#source").attr("data-clipboard-text", TEXT);
         }
     })
 }
