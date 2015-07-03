@@ -6,4 +6,4 @@
 	url = git@github.com:fengidri/fengidri.github.io
 [submodule "submodules/tex2html"]
 	path = submodules/tex2html
-	url = git@github.com:fengidri/tex2html.git
+	url = https://github.com/fengidri/tex2html.git

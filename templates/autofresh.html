@@ -1,0 +1,53 @@
+<script src=/static/js/jquery.js ></script>
+<link rel='stylesheet' type='text/css' href=/static/css/base.css ></link>
+<script src='/static/zeroclipboard/ZeroClipboard.js'></script>
+<script>
+var TEXT;
+function myInterval()
+{
+    $.ajax({
+        url: "/autofresh/data",
+        success: function(data){
+            if (TEXT == data) return;
+            TEXT = data;
+            $("#doc").html(data);
+            $("#pages").text(Math.floor($('#doc').height()/1176 + 1));
+            $("#source").attr("data-clipboard-text", data);
+        }
+    })
+}
+$(document).ready(function(){
+    myInterval();
+    setInterval(myInterval,1200);//1000为1秒钟
+
+    var clip=new ZeroClipboard(document.getElementById("source"), {
+        //moviePath: '/static/zeroclipboard/ZeroClipboard.swf'
+    });
+    //var clip = new ZeroClipboard.Client();
+    //clip.setHandCursor(true);
+    //clip.glue('J_copy_clipboard_data');
+    //clip.addEventListener('mouseDown',function() {
+    //    clip.setText(ZeroClipboard.$('#J_share_text').val());
+    //});
+});
+</script>
+<style>
+#head, #doc{
+    margin-left: 1em;
+    width: 900px;
+    border: 1px solid;
+    padding: 1em;
+}
+
+#bottom{
+    height: 500px;
+}
+</style>
+<div id=head>
+    <button data-clipboard-text="" id=source>Copy</button>
+    Pages:<label id='pages'> </label>
+</div>
+<div id=doc>
+</div>
+<div id=bottom >
+</div>

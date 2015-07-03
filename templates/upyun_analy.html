@@ -1,0 +1,132 @@
+
+<script src='/static/js/jquery.js'></script>
+<script src="/static/layer-v1.9.3/layer/layer.js"></script>
+
+<style>
+#url{
+    width: 420pt;
+    margin: auto;
+    text-align: center;
+}
+#url input{
+    height: 40;
+    font-size: 17;
+    padding: 5;
+    width: 400;
+}
+#url button{
+    height: 40;
+    font-size: 17;
+}
+#input #text{
+    display: none;
+}
+#msg{
+    text-align: center;
+}
+table{
+    border-collapse:collapse;
+    border: 1px solid;
+    margin: auto;
+    margin-top: 1em;
+}
+table td{
+    border: 1px solid;
+    vertical-align: top;
+    text-align: left;
+    padding: 8px;
+}
+table td#key{
+    vertical-align: top;
+    text-align: left;
+    color: blue;
+}
+#string{
+    color: black;
+}
+#number{
+    color: grey;
+}
+#null{
+    color: red;
+}
+
+#boolean{
+    color: purple;
+}
+#info{
+    display: none;
+}
+#render{
+    border: 2px solid;
+    display: inline-block;
+    margin: 2em;
+}
+#render #big{
+    display: none;
+}
+
+
+#wrap{
+    margin: auto;
+    width: 1000;
+}
+#resources_list{
+    width: 100%;
+}
+</style>
+<div id=wrap>
+    <div id=url>
+        <input id=testurl value="http://blog.huaban.com/"></input>
+        <button id=teststart>Start Test</button>
+    </div>
+    <div id=msg></div>
+
+    <div id=info>
+       <h4>状态统计</h4>
+        <table>
+            <tr>
+                <td>总资源数</td>
+                <td>CDN 加速</td>
+                <td>缓存命中</td>
+                <td>GZIP 压缩</td>
+                <td>HTTPS</td>
+                <td>HOST 数</td>
+                <td>加载用时/s</td>
+                <td>下载</td>   </tr>
+
+            <tr><td id=resource-td-2 ></td>
+                <td id=cdn-td-2 ></td>
+                <td id=hit-td-2 ></td>
+                <td id=gzip-td-2 ></td>
+                <td id=https-td-2 ></td>
+                <td id=hosts-td-2 ></td>
+                <td id=loadtime-td-2 ></td>
+                <td id=size-td-2 ></td>
+            </tr>
+        </table>
+       <h4>返回状态码</h4>
+        <table id=codes style='margin:2em;'>
+        </table>
+
+       <h4>Resource LIst</h4>
+       <table id=resources_list>
+           <thead>
+           <tr> <th>URL</th> <th>Size</th> <th>Time</th> </tr>
+           </thead>
+           <tbody>
+
+
+           </tbody>
+       </table>
+
+       <h4>网页截图</h4>
+        <div id=render>
+            <img id=small>
+            <img id=big>
+        </div>
+
+    </div>
+</div>
+<script src='/static/upyun/analy.js'> </script>
+
