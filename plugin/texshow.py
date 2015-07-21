@@ -8,31 +8,44 @@ import sys
 import redis
 import json
 from cottle import handle
-from textohtml import texstohtmls
+from textohtml import html, markdown
 import traceback
 
-name = 'autofresh'
+name = 'texshow'
 urls = ('', "index",
         '/data', "data")
 
 class index(handle):
     def GET(self):
-        return self.template('autofresh')
+        return self.template('texshow')
 
 class data(handle):
     data = "-- no data --"
     tp   = ''
     index = 0
+    request_type = ""
     def GET(self):
         qindex = self.query.get("index")
-        if qindex and qindex == str(self.index):
+        tp = self.query.get("type", 'HTML').lower()
+        if qindex and qindex == str(self.index) and tp == self.request_type:
             return [self.index, '']
+
+        self.request_type = tp
+
         data = self.data
-        if self.tp in ['mkiv', 'content']:
+
+        if tp == 'html':
             try:
-                data = texstohtmls(self.data)
+                data = html(buf = self.data)
             except:
                 data = "<pre>%s</pre>" % traceback.format_exc()
+
+        elif self.tp == 'markdown':
+            try:
+                data = markdown(buf = self.data)
+            except:
+                data = "<pre>%s</pre>" % traceback.format_exc()
+
         return [self.index, data]
 
     def POST(self):

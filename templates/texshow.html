@@ -7,7 +7,8 @@ var INDEX = -1;
 function myInterval()
 {
     $.ajax({
-        url: "/autofresh/data?index=" + INDEX,
+        url: "/texshow/data",
+        data:  {index: INDEX, type: $("#type").val()},
         dataType: 'json',
         success: function(data){
             if (INDEX == data[0]) return;
@@ -22,7 +23,7 @@ function myInterval()
 }
 $(document).ready(function(){
     myInterval();
-    setInterval(myInterval,1200);//1000为1秒钟
+    setInterval(myInterval,2200);//1000为1秒钟
 
     var clip=new ZeroClipboard(document.getElementById("source"), {
         //moviePath: '/static/zeroclipboard/ZeroClipboard.swf'
@@ -50,6 +51,11 @@ $(document).ready(function(){
 <div id=head>
     <button data-clipboard-text="" id=source>Copy</button>
     Pages:<label id='pages'> </label>
+    <select id=type>
+        <option>HTML</option>
+        <option>MARKDOWN</option>
+        <option>TEX</option>
+    </select>
 </div>
 <div id=doc>
 </div>
