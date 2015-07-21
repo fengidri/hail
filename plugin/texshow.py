@@ -28,7 +28,7 @@ class data(handle):
         qindex = self.query.get("index")
         tp = self.query.get("type", 'HTML').lower()
         if qindex and qindex == str(self.index) and tp == self.request_type:
-            return [self.index, '']
+            return [self.index, '', tp]
 
         self.request_type = tp
 
@@ -40,13 +40,13 @@ class data(handle):
             except:
                 data = "<pre>%s</pre>" % traceback.format_exc()
 
-        elif self.tp == 'markdown':
+        elif tp == 'markdown':
             try:
                 data = markdown(buf = self.data)
             except:
                 data = "<pre>%s</pre>" % traceback.format_exc()
 
-        return [self.index, data]
+        return [self.index, data, tp]
 
     def POST(self):
         self.tp    =  self.forms.get('type')

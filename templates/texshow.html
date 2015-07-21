@@ -4,36 +4,36 @@
 <script>
 var TEXT;
 var INDEX = -1;
-function myInterval()
+var TYPE;
+function fresh()
 {
     $.ajax({
         url: "/texshow/data",
         data:  {index: INDEX, type: $("#type").val()},
         dataType: 'json',
         success: function(data){
-            if (INDEX == data[0]) return;
-            INDEX = data[0];
-            TEXT = data[1];
+            if (INDEX == data[0] && TYPE == data[2]) return;
 
-            $("#doc").html(TEXT);
+            INDEX = data[0];
+            TEXT  = data[1];
+            TYPE  = data[2];
+
+            if (TYPE == 'html')
+                $("#doc").html(TEXT);
+            else
+                $("#doc").html("<pre>" + TEXT + "</pre>");
+
+
             $("#pages").text(Math.floor($('#doc').height()/1176 + 1));
             $("#source").attr("data-clipboard-text", TEXT);
         }
     })
 }
 $(document).ready(function(){
-    myInterval();
-    setInterval(myInterval,2200);//1000为1秒钟
-
-    var clip=new ZeroClipboard(document.getElementById("source"), {
-        //moviePath: '/static/zeroclipboard/ZeroClipboard.swf'
-    });
-    //var clip = new ZeroClipboard.Client();
-    //clip.setHandCursor(true);
-    //clip.glue('J_copy_clipboard_data');
-    //clip.addEventListener('mouseDown',function() {
-    //    clip.setText(ZeroClipboard.$('#J_share_text').val());
-    //});
+    fresh();
+    setInterval(fresh,2200);//1000为1秒钟
+    $("#type").change(fresh);
+    var clip=new ZeroClipboard(document.getElementById("source"), { });
 });
 </script>
 <style>
